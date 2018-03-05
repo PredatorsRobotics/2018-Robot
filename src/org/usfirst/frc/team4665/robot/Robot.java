@@ -16,6 +16,8 @@ import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -25,23 +27,24 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
  * directory.
  */
 public class Robot extends IterativeRobot {
-	private Victor driveMotors[] = {new Victor(0), new Victor(1), new Victor(2), new Victor(3)};
-	private RobotDrive m_robotDrive
-			= new RobotDrive(driveMotors[0], driveMotors[2], driveMotors[1], driveMotors[3]);
+	private Victor driveMotors[] = { new Victor(0), new Victor(1), new Victor(2), new Victor(3) };
+	private RobotDrive m_robotDrive = new RobotDrive(driveMotors[0], driveMotors[2], driveMotors[1], driveMotors[3]);
 	private Spark armExtender = new Spark(5);
 	private Spark armDart = new Spark(4);
 	private Joystick r_stick = new Joystick(0);
 	private Joystick l_stick = new Joystick(1);
 	private Timer m_timer = new Timer();
-	private DigitalInput limitSwitches[] = { new DigitalInput(0), new DigitalInput(1),
-			new DigitalInput(2), new DigitalInput(3)};
+	private DigitalInput limitSwitches[] = { new DigitalInput(0), new DigitalInput(1), new DigitalInput(2),
+			new DigitalInput(3) };
 	private boolean isHoldingBox = false;
-	private Spark gripperMotors[] = {new Spark(6), new Spark(7)};
+	private Spark gripperMotors[] = { new Spark(6), new Spark(7) };
 	private boolean isLeftSideOurs;
-	
+	private SendableChooser autoChooser;
+	private String autoSide;
+
 	/**
-	 * This function is run when the robot is first started up and should be
-	 * used for any initialization code.
+	 * This function is run when the robot is first started up and should be used
+	 * for any initialization code.
 	 */
 	@Override
 	public void robotInit() {
@@ -49,6 +52,17 @@ public class Robot extends IterativeRobot {
 		for (Victor driveMotor : driveMotors) {
 			driveMotor.setInverted(true);
 		}
+		autoChooser = new SendableChooser();
+		autoChooser.addDefault("Advance", "Default");
+		autoChooser.addObject("Left", "Left");
+		autoChooser.addObject("Right", "Right");
+		SmartDashboard.putData("Auto Chooser", autoChooser);
+
+	}
+
+	private Object Default() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	/**
@@ -60,6 +74,7 @@ public class Robot extends IterativeRobot {
 		m_timer.start();
 		String gameData;
 		isLeftSideOurs = DriverStation.getInstance().getGameSpecificMessage().charAt(1) == 'L';
+		autoSide = (String) autoChooser.getSelected();
 	}
 
 	/**
@@ -67,14 +82,40 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
-		// Drive for 2 seconds
-		if (m_timer.get() < 0.5) {
-			m_robotDrive.arcadeDrive(0, (isLeftSideOurs ? -0.5 : 0.5));
-		} else if (m_timer.get() < 3.0) {
-			// TODO: figure out why we have to go negative here
-			m_robotDrive.arcadeDrive(-0.5, 0.0); // drive forwards half speed
+
+		if (autoSide.equals("Left")) {
+			
+			// Default (Advance)
+			if (m_timer.get() < 0.5) {
+				m_robotDrive.arcadeDrive(0, (isLeftSideOurs ? -0.5 : 0.5));
+			} else if (m_timer.get() < 3.0) {
+				// TODO: figure out why we have to go negative here
+				m_robotDrive.arcadeDrive(-0.5, 0.0); // drive forwards half speed
+			} else {
+				m_robotDrive.stopMotor(); // stop robot
+			}
+		} else if (autoSide.equals("Right")) {
+
+			// Left
+			if (m_timer.get() < 0.5) {
+				m_robotDrive.arcadeDrive(0, (isLeftSideOurs ? -0.5 : 0.5));
+			} else if (m_timer.get() < 3.0) {
+				// TODO: figure out why we have to go negative here
+				m_robotDrive.arcadeDrive(-0.5, 0.0); // drive forwards half speed
+			} else {
+				m_robotDrive.stopMotor(); // stop robot
+			}
 		} else {
-			m_robotDrive.stopMotor(); // stop robot
+			
+			// Right
+			if (m_timer.get() < 0.5) {
+				m_robotDrive.arcadeDrive(0, (isLeftSideOurs ? -0.5 : 0.5));
+			} else if (m_timer.get() < 3.0) {
+				// TODO: figure out why we have to go negative here
+				m_robotDrive.arcadeDrive(-0.5, 0.0); // drive forwards half speed
+			} else {
+				m_robotDrive.stopMotor(); // stop robot
+			}
 		}
 	}
 
@@ -91,27 +132,27 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		m_robotDrive.arcadeDrive(r_stick.getY(), r_stick.getX());
-		
+
 		// Extend/retract arm:
-		if (r_stick.getRawButton(2) && !limitSwitches[1].get()){ // Button Pressed and switch not pressed
-			armExtender.set(-1); // Retract arm	
-		} else if (r_stick.getRawButton(3) &&
-				   limitSwitches[3].get() && !limitSwitches[2].get() && // the arm is all the way up
-				   !limitSwitches[2].get()) { // the arm isn't fully extended
+		if (r_stick.getRawButton(2) && !limitSwitches[1].get()) { // Button Pressed and switch not pressed
+			armExtender.set(-1); // Retract arm
+		} else if (r_stick.getRawButton(3) && limitSwitches[3].get() && !limitSwitches[2].get() && // the arm is all the
+																									// way up
+				!limitSwitches[2].get()) { // the arm isn't fully extended
 			armExtender.set(1); // Extend arm
-		} else { 
+		} else {
 			armExtender.set(0); // Disable arm
 		}
-		
+
 		// Raise and lower arm:
-		if (l_stick.getRawButton(3) && !limitSwitches[3].get()) { //Button Pressed and switch not pressed 
-			armDart.set(.75); // Raise arm	
+		if (l_stick.getRawButton(3) && !limitSwitches[3].get()) { // Button Pressed and switch not pressed
+			armDart.set(.75); // Raise arm
 		} else if (l_stick.getRawButton(2) && limitSwitches[1].get()) {
 			armDart.set(-.5); // Lower arm
-		} else { 
+		} else {
 			armDart.set(0); // Disable arm
 		}
-		
+
 		// Deal with gripper
 		if (r_stick.getRawButton(11)) {
 			isHoldingBox = true;
@@ -127,7 +168,7 @@ public class Robot extends IterativeRobot {
 			setGrip(0);
 		}
 	}
-	
+
 	public void setGrip(double value) {
 		gripperMotors[0].set(value);
 		gripperMotors[1].set(-value);
