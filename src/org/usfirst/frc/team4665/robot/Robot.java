@@ -110,12 +110,12 @@ public class Robot extends IterativeRobot {
 		}
 	}
 	
-	public function autoOppositeSide(String side) {
+	public void autoOppositeSide(String side) {
 		Integer rotationCoefficient = side.equals("Left") ? 1 : -1;
 		// TODO
 	}
 	
-	public function autoDefault() {
+	public void autoDefault() {
 		// Default (Advance)
 		if (m_timer.get() < 6) {
 			m_robotDrive.arcadeDrive(-.5,0);
