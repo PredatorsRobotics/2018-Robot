@@ -83,12 +83,12 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
-
+			//Same Side
 		if (autoSide.equals("Left")) {
 			
-			// Left
+			
 			if (m_timer.get() < 0.5) {
-				m_robotDrive.arcadeDrive(0, (isLeftSideOurs ? -0.5 : 0.5));
+				m_robotDrive.arcadeDrive(0, (isLeftSideOurs ? -0.75 : 0.));
 			} else if (m_timer.get() < 3.0) {
 				// TODO: figure out why we have to go negative here
 				m_robotDrive.arcadeDrive(-0.5, 0.0); // drive forwards half speed
@@ -98,7 +98,7 @@ public class Robot extends IterativeRobot {
 
 		} else if (autoSide.equals("Right")) {
 
-			// Left
+			// Opposite Side
 			if (m_timer.get() < 0.5) {
 				m_robotDrive.arcadeDrive(0, (isLeftSideOurs ? -0.5 : 0.5));
 			} else if (m_timer.get() < 3.0) {
@@ -145,7 +145,7 @@ public class Robot extends IterativeRobot {
 
 		// Raise and lower arm:
 		if (r_stick.getRawButton(6) && !limitSwitches[3].get()) { // Button Pressed and switch not pressed
-			armDart.set(.75); // Raise arm
+			armDart.set(.85); // Raise arm
 		} else if (r_stick.getRawButton(7) && limitSwitches[1].get()) {
 			armDart.set(-.75); // Lower arm
 		} else {
@@ -170,11 +170,11 @@ public class Robot extends IterativeRobot {
 
 	public void setGrip(double value) {
 		if (r_stick.getRawButton(4))
-			gripperMotors[0].set(-value); // invert
+			gripperMotors[0].set(-value/2); // invert
 		else
 			gripperMotors[0].set(value);
 		if (r_stick.getRawButton(5))
-			gripperMotors[1].set(value);
+			gripperMotors[1].set(value/2);
 		else
 			gripperMotors[1].set(-value);
 	}
