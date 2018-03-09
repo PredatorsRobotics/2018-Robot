@@ -151,7 +151,7 @@ public class Robot extends IterativeRobot {
 
 		// Raise and lower arm:
 		if (r_stick.getRawButton(6) && !limitSwitches[3].get()) { // Button Pressed and switch not pressed
-			armDart.set(.75); // Raise arm
+			armDart.set(.85); // Raise arm
 		} else if (r_stick.getRawButton(7) && limitSwitches[1].get()) {
 			armDart.set(-.75); // Lower arm
 		} else {
@@ -163,7 +163,7 @@ public class Robot extends IterativeRobot {
 			isHoldingBox = true;
 		} else if (r_stick.getTrigger()) {
 			isHoldingBox = false;
-			setGrip(0.75);
+			setGrip(1);
 		} else if (l_stick.getTrigger()) {
 			isHoldingBox = false;
 			setGrip(0.3);
@@ -176,11 +176,11 @@ public class Robot extends IterativeRobot {
 
 	public void setGrip(double value) {
 		if (r_stick.getRawButton(4))
-			gripperMotors[0].set(-value); // invert
+			gripperMotors[0].set(-value/2); // invert
 		else
 			gripperMotors[0].set(value);
 		if (r_stick.getRawButton(5))
-			gripperMotors[1].set(value);
+			gripperMotors[1].set(value/2);
 		else
 			gripperMotors[1].set(-value);
 	}
