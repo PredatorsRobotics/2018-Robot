@@ -84,37 +84,43 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 
-		if (autoSide.equals("Left")) {
+		if (autoSide.equals("Left") && isLeftSideOurs)
+			autoSameSide("Left");
+		else if (autoSide.equals("Right") && !isLeftSideOurs)
+			autoSameSide("Right");
+		else if (autoSide.equals("Left") && !isLeftSideOurs)
+			autoOppositeSide("Left");
+		else if (autoSide.equals("Right") && isLeftSideOurs)
+			autoOppositeSide("Right");
+		else
+			autoDefault();
+	}
+
+	public void autoSameSide(String side) {
+		Integer rotationCoefficient = side.equals("Left") ? 1 : -1;
 			
-			// Left
-			if (m_timer.get() < 0.5) {
-				m_robotDrive.arcadeDrive(0, (isLeftSideOurs ? -0.5 : 0.5));
-			} else if (m_timer.get() < 3.0) {
-				// TODO: figure out why we have to go negative here
-				m_robotDrive.arcadeDrive(-0.5, 0.0); // drive forwards half speed
-			} else {
-				m_robotDrive.stopMotor(); // stop robot
-			}
-
-		} else if (autoSide.equals("Right")) {
-
-			// Left
-			if (m_timer.get() < 0.5) {
-				m_robotDrive.arcadeDrive(0, (isLeftSideOurs ? -0.5 : 0.5));
-			} else if (m_timer.get() < 3.0) {
-				// TODO: figure out why we have to go negative here
-				m_robotDrive.arcadeDrive(-0.5, 0.0); // drive forwards half speed
-			} else {
-				m_robotDrive.stopMotor(); // stop robot
-			}
+		// Left
+		if (m_timer.get() < 0.5) {
+			m_robotDrive.arcadeDrive(0, (isLeftSideOurs ? -0.5 : 0.5));
+		} else if (m_timer.get() < 3.0) {
+			// TODO: figure out why we have to go negative here
+			m_robotDrive.arcadeDrive(-0.5, 0.0); // drive forwards half speed
 		} else {
-			
-			// Default (Advance)
-			if (m_timer.get() < 6) {
-				m_robotDrive.arcadeDrive(-.5,0);
-			} else {
-				m_robotDrive.stopMotor(); // stop robot
-			}
+			m_robotDrive.stopMotor(); // stop robot
+		}
+	}
+	
+	public function autoOppositeSide(String side) {
+		Integer rotationCoefficient = side.equals("Left") ? 1 : -1;
+		// TODO
+	}
+	
+	public function autoDefault() {
+		// Default (Advance)
+		if (m_timer.get() < 6) {
+			m_robotDrive.arcadeDrive(-.5,0);
+		} else {
+			m_robotDrive.stopMotor(); // stop robot
 		}
 	}
 
