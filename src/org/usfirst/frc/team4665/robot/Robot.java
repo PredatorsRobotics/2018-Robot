@@ -157,7 +157,7 @@ public class Robot extends IterativeRobot {
 			isHoldingBox = true;
 		} else if (r_stick.getTrigger()) {
 			isHoldingBox = false;
-			setGrip(0.75);
+			setGrip(1);
 		} else if (l_stick.getTrigger()) {
 			isHoldingBox = false;
 			setGrip(0.3);
