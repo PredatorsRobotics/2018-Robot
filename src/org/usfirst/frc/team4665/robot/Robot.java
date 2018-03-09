@@ -169,8 +169,14 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void setGrip(double value) {
-		gripperMotors[0].set(value);
-		gripperMotors[1].set(-value);
+		if (r_stick.getRawButton(4))
+			gripperMotors[0].set(-value); // invert
+		else
+			gripperMotors[0].set(value);
+		if (r_stick.getRawButton(5))
+			gripperMotors[1].set(value);
+		else
+			gripperMotors[1].set(-value);
 	}
 
 	/**
