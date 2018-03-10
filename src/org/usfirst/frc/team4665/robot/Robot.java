@@ -56,7 +56,7 @@ public class Robot extends IterativeRobot {
 		autoChooser = new SendableChooser();
 		autoChooser.addDefault("Advance", "Default");
 		autoChooser.addObject("Left", "Left");
-		autoChooser.addObject("Right", "Right");
+		autoChooser.addObject("None", "None");
 		SmartDashboard.putData("Auto Chooser", autoChooser);
 
 	}
@@ -84,45 +84,35 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 
-		if (autoSide.equals("Left") && isLeftSideOurs)
-			autoSameSide("Left");
-		else if (autoSide.equals("Right") && !isLeftSideOurs)
-			autoSameSide("Right");
-		else if (autoSide.equals("Left") && !isLeftSideOurs)
-			autoOppositeSide("Left");
-		else if (autoSide.equals("Right") && isLeftSideOurs)
-			autoOppositeSide("Right");
-		else
-			autoDefault();
-	}
-
-	public void autoSameSide(String side) {
-		Integer rotationCoefficient = side.equals("Left") ? 1 : -1;
+		if (autoSide.equals("Left")) {
 			
-		// Left
-		if (m_timer.get() < 0.5) {
-			m_robotDrive.arcadeDrive(0, (isLeftSideOurs ? -0.5 : 0.5));
-		} else if (m_timer.get() < 3.0) {
-			// TODO: figure out why we have to go negative here
-			m_robotDrive.arcadeDrive(-0.5, 0.0); // drive forwards half speed
+			// Left
+			if (m_timer.get() < 0.5) {
+				m_robotDrive.arcadeDrive(0, (isLeftSideOurs ? -0.5 : 0.5));
+			} else if (m_timer.get() < 3.0) {
+				// TODO: figure out why we have to go negative here
+				m_robotDrive.arcadeDrive(-0.5, 0.0); // drive forwards half speed
+			} else {
+				m_robotDrive.stopMotor(); // stop robot
+			}
+
+		} else if (autoSide.equals("None")) {
+
+				m_robotDrive.stopMotor(); // stop robot
+			
 		} else {
-			m_robotDrive.stopMotor(); // stop robot
+			
+			// Default (Advance)
+			if (m_timer.get() < 5) {
+				m_robotDrive.arcadeDrive(-.5,0);
+			} else {
+				m_robotDrive.stopMotor(); // stop robot
+			}
 		}
 	}
+			
+		
 	
-	public void autoOppositeSide(String side) {
-		Integer rotationCoefficient = side.equals("Left") ? 1 : -1;
-		// TODO
-	}
-	
-	public void autoDefault() {
-		// Default (Advance)
-		if (m_timer.get() < 6) {
-			m_robotDrive.arcadeDrive(-.5,0);
-		} else {
-			m_robotDrive.stopMotor(); // stop robot
-		}
-	}
 
 	/**
 	 * This function is called once each time the robot enters teleoperated mode.
@@ -151,7 +141,7 @@ public class Robot extends IterativeRobot {
 
 		// Raise and lower arm:
 		if (r_stick.getRawButton(6) && !limitSwitches[3].get()) { // Button Pressed and switch not pressed
-			armDart.set(.85); // Raise arm
+			armDart.set(.75); // Raise arm
 		} else if (r_stick.getRawButton(7) && limitSwitches[1].get()) {
 			armDart.set(-.75); // Lower arm
 		} else {
@@ -163,7 +153,7 @@ public class Robot extends IterativeRobot {
 			isHoldingBox = true;
 		} else if (r_stick.getTrigger()) {
 			isHoldingBox = false;
-			setGrip(1);
+			setGrip(0.75);
 		} else if (l_stick.getTrigger()) {
 			isHoldingBox = false;
 			setGrip(0.3);
@@ -175,14 +165,15 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void setGrip(double value) {
-		if (r_stick.getRawButton(4))
-			gripperMotors[0].set(-value/2); // invert
-		else
-			gripperMotors[0].set(value);
-		if (r_stick.getRawButton(5))
-			gripperMotors[1].set(value/2);
-		else
-			gripperMotors[1].set(-value);
+			if (r_stick.getRawButton(4))
+				gripperMotors[0].set(-value); // invert
+			else
+				gripperMotors[0].set(value);
+			if (r_stick.getRawButton(5))
+				gripperMotors[1].set(value);
+			else
+				gripperMotors[1].set(-value);
+		}
 	}
 
 	/**
