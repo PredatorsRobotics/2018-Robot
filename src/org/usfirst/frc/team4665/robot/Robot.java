@@ -89,10 +89,12 @@ public class Robot extends IterativeRobot {
 				else if (m_timer.get() < 1)
 					m_robotDrive.arcadeDrive(.5, 0);
 				else if (m_timer.get() < 5) {
-					m_robotDrive.arcadeDrive(-.5, .1);
-					if (!limitSwitches[3].get()) { // Button Pressed and switch not pressed
-						armDart.set(.75); // Raise arm)
+					m_robotDrive.arcadeDrive(-.75, .1);
+					if (!limitSwitches[3].get()) { //Switch not pressed
+						armDart.set(1); // Raise arm)
 					}
+				else if (m_timer.get() < 6 && limitSwitches[3].get()) {
+					armExtender.set(1);
 				}
 			}
 			if (!limitSwitches[0].get()) { // if the box isn't fully sucked in
@@ -100,6 +102,7 @@ public class Robot extends IterativeRobot {
 			} else {
 				setGrip(0);
 			}
+		}
 	}
 
 	/**
@@ -137,12 +140,9 @@ public class Robot extends IterativeRobot {
 		}
 
 		// Deal with gripper
-		if (r_stick.getRawButton(11)) {
+		if (r_stick.getRawButton(11) || l_stick.getTrigger()) {
 			isHoldingBox = true;
-		} else if (l_stick.getTrigger()) {
-			isHoldingBox = false;
-			setGrip(0.3);
-		} else if (r_stick.getTrigger()) {
+		} else if (r_stick.getTrigger() || l_stick.getRawButton(2)) {
 			isHoldingBox = false;
 			setGrip(0.75);
 		} else if (isHoldingBox && !limitSwitches[0].get()) { // if the box isn't fully sucked in
