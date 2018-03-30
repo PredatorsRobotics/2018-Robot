@@ -90,32 +90,40 @@ public class Robot extends IterativeRobot {
 
 		//Going for same side scale
 		if (autoSide.equals("Left") || autoSide.equals("Right")) {
-			if (isStartingOnLeft = isLeftSideOurs){//Sides equal each other
+			if (isStartingOnLeft == isLeftSideOurs){//Sides equal each other
 				
-			//Drive forward & Raise up
+			//Drive
 				if (m_timer.get() < 4) {
-					m_robotDrive.arcadeDrive(-.6,.2);
-					if (!limitSwitches[3].get()) {
-						armDart.set(.7);
-					} else {
-						armDart.set(0);
-					}
-				} else if (m_timer.get() < 6 && !limitSwitches[2].get()) {
-					armExtender.set(.6);
-					if (!limitSwitches[3].get()) {
-						armDart.set(.7);
-					} else {
-						armDart.set(0);
-					}
-					if (m_timer.get() < 5) {
-						m_robotDrive.arcadeDrive(0,-.5);
-					} else {
-						m_robotDrive.arcadeDrive(0,0);
-					}
-					
+					m_robotDrive.arcadeDrive(-.75,.075);
+				} else if ((m_timer.get() < 4.5)){
+					m_robotDrive.arcadeDrive(0,.75);
 				} else {
-					setGrip(0.75);
-					armExtender.set(.1);
+					m_robotDrive.stopMotor(); // stop robot
+				}
+				
+			//Arm
+				if(!limitSwitches[3].get()) {
+					armDart.set(.75);
+				}
+				
+			//Extender
+				if(limitSwitches[3].get() && !limitSwitches[2].get()) {
+					armDart.set(0);
+					armExtender.set(.75);
+				}
+				
+			//Gripper
+				if (m_timer.get() < 4.5) {
+					if(!limitSwitches[0].get()) {
+						setGrip(-.65);
+					}else {
+						setGrip(-.1);
+					}
+				}
+				
+				if(limitSwitches[2].get()) {
+					armExtender.set(0);
+					setGrip(1);
 				}
 			}else {
 				if (m_timer.get() < 6) {
